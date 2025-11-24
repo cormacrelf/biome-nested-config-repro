@@ -25,20 +25,11 @@ let x = 5;
 ...
 ```
 
-Because the root config includes `**/*.js`, this also works and formats the js
-file:
-
-```
-biome format --stdin-file-path=subdirectory/lib.js < subdirectory/lib.js
-
-let y = 65;
-...
-```
-
 ## The failure: `biome format --stdin-file-path=subdirectory/...`
 
-Formatting the typescript, and stdin mode does not format, it just prints the
-input unchanged.
+### Formatting `subdirectory/lib.js`
+
+Stdin mode does not format, it just prints the input unchanged.
 
 ```
 biome format --stdin-file-path=subdirectory/lib.ts < subdirectory/lib.ts
@@ -47,18 +38,32 @@ let y              = 65;
 ...
 ```
 
-If you remove `**/*.js` from the root, that also happens with .js:
+### Formatting `subdirectory/lib.js`
 
+Because the root config includes `**/*.js`, formatting the javascript file
+half-works, but ignores the subdirectory's 2-spaces config. As you can see it
+did reformat the let binding, but changed the spacing to 4 spaces:
+
+```sh
+# using moreutils' sponge
+biome format --stdin-file-path=subdirectory/lib.js < subdirectory/lib.js | sponge subdirectory/lib.js
 ```
-biome format --stdin-file-path=subdirectory/lib.js < subdirectory/lib.js
 
+```diff
+-let y              = 65;
++let y = 65;
 
-let y              = 65;
-...
+ function indent() {
+-  // `biome format .` respects the formatter/indentWidth property from the root config (2 spaces)
+-  return y;
++    // `biome format .` respects the formatter/indentWidth property from the root config (2 spaces)
++    return y;
+ }
 ```
+
+### Running from within the subdirectory?
 
 If you `cd subdirectory`, it fails as well:
-
 
 ```
 cd subdirectory
@@ -71,7 +76,8 @@ let y              = 65;
 ## `biome format .`: works for all files including in the subdirectory
 
 This behaves as if `subdirectory/biome.jsonc` adds items the root's `includes`
-list, which is a justifiable and sane behaviour of "extends".
+list, which is a justifiable and sane behaviour of "extends". It also correctly
+reads the subdirectory's formatter.indentWidth property (2).
 
 ```
 ; biome format .
