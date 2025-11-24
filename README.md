@@ -25,14 +25,26 @@ let x = 5;
 ...
 ```
 
+Because the root config includes `**/*.js`, this also works and formats the js
+file:
+
+```
+biome format --stdin-file-path=subdirectory/lib.js < subdirectory/lib.js
+
+let y = 65;
+...
+```
+
 ## The failure: `biome format --stdin-file-path=subdirectory/...`
 
-This command does not format, it just prints the input unchanged.
+Formatting the typescript, and stdin mode does not format, it just prints the
+input unchanged.
 
 ```
 biome format --stdin-file-path=subdirectory/lib.ts < subdirectory/lib.ts
 
-(unchanged)
+let y              = 65;
+...
 ```
 
 If you remove `**/*.js` from the root, that also happens with .js:
@@ -40,7 +52,9 @@ If you remove `**/*.js` from the root, that also happens with .js:
 ```
 biome format --stdin-file-path=subdirectory/lib.js < subdirectory/lib.js
 
-(unchanged)
+
+let y              = 65;
+...
 ```
 
 If you `cd subdirectory`, it fails as well:
@@ -50,7 +64,8 @@ If you `cd subdirectory`, it fails as well:
 cd subdirectory
 biome format --stdin-file-path=lib.ts < lib.ts
 
-<unchanged>
+let y              = 65;
+...
 ```
 
 ## `biome format .`: works for all files including in the subdirectory
