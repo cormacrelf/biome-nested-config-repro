@@ -1,0 +1,14 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.3.5/schema.json",
+    "root": false,
+    "extends": "//",
+
+    // This appears to have absolutely zero effect on which files are formatted.
+    // Biome only respects the root configuration.
+    "files": {
+        "includes": ["*.ts"]
+    },
+    "formatter": {
+      "indentWidth": 2
+    }
+}
